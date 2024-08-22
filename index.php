@@ -4,17 +4,10 @@ $insert = false;
 $update = false;
 $delete = false;
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "notes";
+require '_dbconnect.php';
 
-// Create a connection
-try {
-    $conn = mysqli_connect($servername, $username, $password, $database, 8111);
-} catch (mysqli_sql_exception $exception) {
-    die("Failed to Connect: " . $exception->getMessage());
-} 
+
+// deleting here
 
 if(isset($_GET['delete'])){
   $sno = $_GET['delete'];
@@ -103,26 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
   </div>
 </div>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">QuickNotez</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Contact Us</a></li>
-        <li class="nav-item"><a class="nav-link disabled" aria-disabled="true">Disabled</a></li>
-      </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</nav>
+<?php include 'navbar.php';?>
 
 <?php
 if ($insert) {
@@ -175,63 +149,18 @@ if ($update) {
       </tr>
     </thead>
     <tbody>
-     <?php
-          $sql = "SELECT * FROM `notes`";
-          $result = mysqli_query($conn,$sql);
-          $sno = 0;
-          while($row = mysqli_fetch_assoc($result)){
-            $sno = $sno + 1;
-            echo "<tr>
-               <th scope='row'>". $sno. "</th>
-               <td>". $row['title']. "</td>
-               <td>". $row['description']. "</td>
-               <td>
-                 <button class='edit btn btn-sm btn-primary' id=".$row['sno'].">Edit</button> 
-                 <button class='delete btn btn-sm btn-danger' id=d".$row['sno'].">Delete</button> 
-                 
-               </td>
-              </tr>";
-          }
-        ?>
+
+
+     <?php require 'selecting_data.php';?>
+
+
     </tbody> 
   </table>
 </div>
 <hr>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-<script src="//cdn.datatables.net/2.1.4/js/dataTables.min.js"></script>
-<script>
-  let table = new DataTable('#myTable');
+<?php require 'scripts.php';?>
 
-  edits = document.getElementsByClassName('edit');
-  Array.from(edits).forEach((element)=>{
-    element.addEventListener("click",(e)=>{
-      tr = e.target.parentNode.parentNode;
-      title = tr.getElementsByTagName("td")[0].innerText;
-      description = tr.getElementsByTagName("td")[1].innerText;
-      titleEdit.value = title;
-      descriptionEdit.value = description;
-      snoEdit.value = e.target.id;
-      $('#editModal').modal('toggle');
-      // to trigger modal via js
-    })
-  })
 
- deletes = document.getElementsByClassName('delete');
-Array.from(deletes).forEach((element) => {
-    element.addEventListener("click", (e) => {
-        // Extracting the number after the first character of the ID
-        let sno = e.target.id.substr(1); 
-        if (confirm("Are you sure you want to delete this note?")) {
-            console.log("Yes, deleting note", sno);
-            window.location = `/CRUD/index.php?delete=${sno}`;
-        } else {
-            console.log("No, cancel delete");
-        }
-    });
-});
-
-</script>
 </body>
 </html>
